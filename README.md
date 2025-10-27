@@ -1,4 +1,4 @@
-# School Management System
+# Smart School ERP
 
 A comprehensive school management system built with Java Swing, JDBC, and MySQL. This system provides a complete solution for managing students, teachers, classes, grades, attendance, and more.
 
