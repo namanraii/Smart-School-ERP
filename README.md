@@ -205,8 +205,8 @@ The application uses SLF4J with Logback for logging. Logs are written to the con
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - check the LICENSE file for details.
 
 ## Support
 
-For support and questions, please create an issue in the repository or contact the development team.
+For support and queries, please create an issue in the repository or contact the development team.
