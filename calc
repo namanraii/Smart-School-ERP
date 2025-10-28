@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Calculator</title>
+    <!-- Load Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use the Inter font, a clean sans-serif font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom style for display to prevent line breaks */
+        #display {
+            white-space: nowrap;
+            overflow-x: auto;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        #display::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+
+    <!-- Calculator Body -->
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-xs mx-auto">
+
+        <!-- Display Screen -->
+        <div id="display" class="bg-gray-700 text-white text-4xl font-light text-right p-4 rounded-lg mb-4 h-20 flex items-center justify-end">
+            0
+        </div>
+
+        <!-- Button Grid -->
+        <div class="grid grid-cols-4 gap-3">
+
+            <!-- Row 1 -->
+            <button onclick="clearDisplay()" class="calculator-btn bg-red-500 hover:bg-red-600 col-span-2">C</button>
+            <button onclick="appendToDisplay('/')" class="calculator-btn bg-orange-500 hover:bg-orange-600">&divide;</button>
+            <button onclick="appendToDisplay('*')" class="calculator-btn bg-orange-500 hover:bg-orange-600">&times;</button>
+
+            <!-- Row 2 -->
+            <button onclick="appendToDisplay('7')" class="calculator-btn bg-gray-600 hover:bg-gray-700">7</button>
+            <button onclick="appendToDisplay('8')" class="calculator-btn bg-gray-600 hover:bg-gray-700">8</button>
+            <button onclick="appendToDisplay('9')" class="calculator-btn bg-gray-600 hover:bg-gray-700">9</button>
+            <button onclick="appendToDisplay('-')" class="calculator-btn bg-orange-500 hover:bg-orange-600">-</button>
+
+            <!-- Row 3 -->
+            <button onclick="appendToDisplay('4')" class="calculator-btn bg-gray-600 hover:bg-gray-700">4</button>
+            <button onclick="appendToDisplay('5')" class="calculator-btn bg-gray-600 hover:bg-gray-700">5</button>
+            <button onclick="appendToDisplay('6')" class="calculator-btn bg-gray-600 hover:bg-gray-700">6</button>
+            <button onclick="appendToDisplay('+')" class="calculator-btn bg-orange-500 hover:bg-orange-600">+</button>
+
+            <!-- Row 4 -->
+            <button onclick="appendToDisplay('1')" class="calculator-btn bg-gray-600 hover:bg-gray-700">1</button>
+            <button onclick="appendToDisplay('2')" class="calculator-btn bg-gray-600 hover:bg-gray-700">2</button>
+            <button onclick="appendToDisplay('3')" class="calculator-btn bg-gray-600 hover:bg-gray-700">3</button>
+            <button onclick="calculateResult()" class="calculator-btn bg-blue-500 hover:bg-blue-600 row-span-2">=</button>
+
+            <!-- Row 5 -->
+            <button onclick="appendToDisplay('0')" class="calculator-btn bg-gray-600 hover:bg-gray-700 col-span-2">0</button>
+            <button onclick="appendToDisplay('.')" class="calculator-btn bg-gray-600 hover:bg-gray-700">.</button>
+
+        </div>
+    </div>
+
+    <!-- Utility classes for Tailwind to recognize -->
+    <script>
+        // Apply common styles to all calculator buttons
+        document.querySelectorAll('.calculator-btn').forEach(button => {
+            button.classList.add(
+                'text-white',
+                'text-3xl',
+                'font-medium',
+                'p-4',
+                'rounded-lg',
+                'shadow-lg',
+                'transition',
+                'duration-150',
+                'ease-in-out',
+                'transform',
+                'active:scale-95'
+            );
+        });
+
+        const display = document.getElementById('display');
+        let currentInput = '0';
+        let operatorPressed = false;
+
+        // Function to add value to the display
+        function appendToDisplay(value) {
+            // Prevent multiple decimal points in a number
+            if (value === '.') {
+                const parts = currentInput.split(/[\+\-\*\/]/);
+                if (parts[parts.length - 1].includes('.')) return;
+            }
+
+            // Prevent multiple operators in a row
+            if (['+', '-', '*', '/'].includes(value)) {
+                if (operatorPressed) {
+                    // Replace the last operator
+                    currentInput = currentInput.slice(0, -1) + value;
+                    display.textContent = currentInput;
+                    return;
+                }
+                operatorPressed = true;
+            } else {
+                operatorPressed = false;
+            }
+
+            // Reset display if it's just "0"
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            display.textContent = currentInput;
+        }
+
+        // Function to clear the display
+        function clearDisplay() {
+            currentInput = '0';
+            operatorPressed = false;
+            display.textContent = '0';
+        }
+
+        // Function to calculate the result
+        function calculateResult() {
+            try {
+                // Using eval() is simple but can be a security risk in a real-world app
+                // For a basic personal calculator, it's acceptable.
+                let result = eval(currentInput.replace('×', '*').replace('÷', '/'));
+
+                // Handle floating point inaccuracy
+                result = parseFloat(result.toFixed(10));
+
+                currentInput = result.toString();
+                display.textContent = currentInput;
+                operatorPressed = false;
+            } catch (error) {
+                display.textContent = 'Error';
+                currentInput = '0';
+                operatorPressed = false;
+            }
+        }
+    </script>
+
+</body>
+</html>
