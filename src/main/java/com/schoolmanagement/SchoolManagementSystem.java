@@ -22,15 +22,20 @@ public class SchoolManagementSystem {
         logger.info("Starting School Management System...");
         
         // Test database connection
-        if (!DatabaseConfig.testConnection()) {
-            logger.error("Database connection failed. Please check your database configuration.");
-            JOptionPane.showMessageDialog(null, 
+        boolean dbConnected = DatabaseConfig.testConnection();
+        if (!dbConnected) {
+            logger.warn("Database connection failed. Running in offline mode.");
+            int result = JOptionPane.showConfirmDialog(null, 
                 "Database connection failed!\n" +
-                "Please ensure MySQL is running and the database is properly configured.\n" +
-                "Check the database.properties file or DatabaseConfig.java for connection settings.",
+                "Would you like to continue in offline mode for testing?\n" +
+                "(Some features may not work without database)",
                 "Database Error", 
-                JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+                JOptionPane.YES_NO_OPTION, 
+                JOptionPane.WARNING_MESSAGE);
+            
+            if (result != JOptionPane.YES_OPTION) {
+                System.exit(1);
+            }
         }
         
         logger.info("Database connection successful");

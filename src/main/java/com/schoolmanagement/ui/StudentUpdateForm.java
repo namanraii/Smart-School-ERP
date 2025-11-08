@@ -250,11 +250,67 @@ public class StudentUpdateForm extends JFrame {
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
         
         // Title
-        JLabel titleLabel = new JLabel("Teacher Management - Coming Soon");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel titleLabel = new JLabel("Teacher Management");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(titleLabel, BorderLayout.CENTER);
+        titleLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        
+        // Teacher data table
+        String[] columnNames = {"Teacher ID", "Name", "Subject", "Email", "Phone", "Status"};
+        Object[][] teacherData = {
+            {"TCH-001", "Dr. Sarah Johnson", "Mathematics", "sarah.johnson@school.edu", "(555) 123-4567", "Active"},
+            {"TCH-002", "Mr. Michael Chen", "Science", "michael.chen@school.edu", "(555) 234-5678", "Active"},
+            {"TCH-003", "Ms. Emily Rodriguez", "English", "emily.rodriguez@school.edu", "(555) 345-6789", "Active"},
+            {"TCH-004", "Mr. David Thompson", "History", "david.thompson@school.edu", "(555) 456-7890", "On Leave"},
+            {"TCH-005", "Ms. Lisa Park", "Art", "lisa.park@school.edu", "(555) 567-8901", "Active"},
+            {"TCH-006", "Mr. Robert Wilson", "Physical Education", "robert.wilson@school.edu", "(555) 678-9012", "Active"}
+        };
+        
+        JTable teacherTable = new JTable(teacherData, columnNames);
+        teacherTable.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        teacherTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        teacherTable.getTableHeader().setBackground(new Color(70, 70, 90));
+        teacherTable.getTableHeader().setForeground(Color.WHITE);
+        teacherTable.setRowHeight(25);
+        teacherTable.setGridColor(new Color(90, 90, 110));
+        teacherTable.setShowGrid(true);
+        teacherTable.setShowHorizontalLines(true);
+        teacherTable.setShowVerticalLines(false);
+        teacherTable.setSelectionBackground(new Color(100, 100, 120));
+        teacherTable.setSelectionForeground(Color.WHITE);
+        
+        JScrollPane scrollPane = new JScrollPane(teacherTable);
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(90, 90, 110), 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        // Summary panel
+        JPanel summaryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        summaryPanel.setBackground(new Color(60, 60, 80));
+        summaryPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
+        
+        JLabel totalLabel = new JLabel("Total Teachers: 6");
+        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        totalLabel.setForeground(Color.WHITE);
+        
+        JLabel activeLabel = new JLabel("Active: 5");
+        activeLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        activeLabel.setForeground(new Color(46, 204, 113));
+        
+        JLabel inactiveLabel = new JLabel("On Leave: 1");
+        inactiveLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        inactiveLabel.setForeground(new Color(241, 196, 15));
+        
+        summaryPanel.add(totalLabel);
+        summaryPanel.add(activeLabel);
+        summaryPanel.add(inactiveLabel);
+        
+        panel.add(summaryPanel, BorderLayout.SOUTH);
         
         return panel;
     }

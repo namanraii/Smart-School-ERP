@@ -28,6 +28,8 @@ public class UserDAO {
         String sql = "SELECT user_id, username, password_hash, email, first_name, last_name, role, is_active " +
                     "FROM users WHERE username = ? AND is_active = true";
         
+        logger.info("Attempting to authenticate user: {}", username);
+        
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
@@ -36,6 +38,8 @@ public class UserDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     String storedHash = rs.getString("password_hash");
+                    logger.debug("Found user {} with password hash: {}", username, storedHash);
+                    logger.debug("Attempting to verify password: '{}' against hash", password);
                     
                     if (PasswordUtil.verifyPassword(password, storedHash)) {
                         User user = new User();
@@ -48,10 +52,10 @@ public class UserDAO {
                         user.setRole(User.UserRole.valueOf(rs.getString("role")));
                         user.setActive(rs.getBoolean("is_active"));
                         
-                        logger.info("User {} authenticated successfully", username);
+                        logger.info("User {} authenticated successfully with role: {}", username, user.getRole());
                         return Optional.of(user);
                     } else {
-                        logger.warn("Invalid password for user: {}", username);
+                        logger.warn("Invalid password for user: {}. Provided password: '{}'", username, password);
                     }
                 } else {
                     logger.warn("User not found: {}", username);

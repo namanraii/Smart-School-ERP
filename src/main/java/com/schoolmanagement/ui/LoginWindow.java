@@ -8,14 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Modern login window for the School Management System
+ * Enhanced Login Window with modern UI design
  */
 public class LoginWindow extends JFrame {
     private static final Logger logger = LoggerFactory.getLogger(LoginWindow.class);
@@ -26,6 +25,17 @@ public class LoginWindow extends JFrame {
     private JButton loginButton;
     private JLabel statusLabel;
     private UserDAO userDAO;
+    
+    // Modern UI Colors
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color SECONDARY_COLOR = new Color(52, 73, 94);
+    private static final Color ACCENT_COLOR = new Color(46, 204, 113);
+    private static final Color ERROR_COLOR = new Color(231, 76, 60);
+    private static final Color BACKGROUND_COLOR = new Color(248, 249, 250);
+    private static final Color CARD_BACKGROUND = Color.WHITE;
+    private static final Color TEXT_COLOR = new Color(44, 62, 80);
+    private static final Color LIGHT_TEXT_COLOR = new Color(127, 140, 141);
+    private static final Color BORDER_COLOR = new Color(221, 221, 221);
 
     public LoginWindow() {
         this.userDAO = new UserDAO();
@@ -342,7 +352,7 @@ public class LoginWindow extends JFrame {
         loginButton.setEnabled(false);
         
         // Perform authentication in a separate thread to avoid blocking UI
-        SwingUtilities.invokeLater(() -> {
+        new Thread(() -> {
             try {
                 Optional<User> userOpt = userDAO.authenticateUser(username, password);
                 
@@ -351,68 +361,51 @@ public class LoginWindow extends JFrame {
                     
                     // Check if user role matches selected role
                     if (!user.getRole().name().toLowerCase().equals(selectedRole)) {
-                        showStatus("Invalid role for this user", Color.RED);
-                        passwordField.setText("");
-                        passwordField.requestFocus();
+                        SwingUtilities.invokeLater(() -> {
+                            showStatus("Invalid role for this user", Color.RED);
+                            passwordField.setText("");
+                            passwordField.requestFocus();
+                        });
                         return;
                     }
                     
                     logger.info("User {} logged in successfully", user.getUsername());
                     
                     // Clear password field for security
-                    passwordField.setText("");
+                    SwingUtilities.invokeLater(() -> passwordField.setText(""));
                     
                     // Close login window and open main application
-                    dispose();
-                    openMainApplication(user);
+                    SwingUtilities.invokeLater(() -> {
+                        dispose();
+                        openMainApplication(user);
+                    });
                 } else {
-                    showStatus("Invalid username or password", Color.RED);
-                    passwordField.setText("");
-                    passwordField.requestFocus();
+                    SwingUtilities.invokeLater(() -> {
+                        showStatus("Invalid username or password", Color.RED);
+                        passwordField.setText("");
+                        passwordField.requestFocus();
+                    });
                 }
             } catch (Exception e) {
                 logger.error("Login error", e);
-                showStatus("Login failed. Please try again.", Color.RED);
+                SwingUtilities.invokeLater(() -> {
+                    showStatus("Login failed. Please try again.", Color.RED);
+                });
             } finally {
-                loginButton.setEnabled(true);
+                SwingUtilities.invokeLater(() -> loginButton.setEnabled(true));
             }
-        });
+        }).start();
     }
 
     private void openMainApplication(User user) {
+        logger.info("openMainApplication: Creating MainWindow for user {}", user.getUsername());
         try {
-            // Convert User to MockUser for compatibility
-            MockUser mockUser = new MockUser(user.getUsername(), user.getRole().toString());
-            JFrame mainWindow = null;
-            
-            switch (user.getRole()) {
-                case STUDENT:
-                    mainWindow = new StudentDashboard(mockUser);
-                    break;
-                case TEACHER:
-                    mainWindow = new TeacherProfileViewer(mockUser);
-                    break;
-                case ADMIN:
-                    mainWindow = new StudentUpdateForm(mockUser);
-                    break;
-                case PARENT:
-                    // For now, use student dashboard for parents
-                    mainWindow = new StudentDashboard(mockUser);
-                    break;
-                default:
-                    mainWindow = new MainWindow(user);
-                    break;
-            }
-            
-            if (mainWindow != null) {
-                mainWindow.setVisible(true);
-            }
+            MainWindow mainWindow = new MainWindow(user);
+            mainWindow.setVisible(true);
+            logger.info("openMainApplication: MainWindow created and set visible");
         } catch (Exception e) {
             logger.error("Error opening main application", e);
-            JOptionPane.showMessageDialog(this, 
-                "Error opening application: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Could not open main application: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
     }

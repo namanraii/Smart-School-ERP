@@ -18,7 +18,12 @@ public class DatabaseConfig {
     private static final String CONFIG_FILE = "database.properties";
 
     static {
-        initializeDataSource();
+        try {
+            initializeDataSource();
+        } catch (Exception e) {
+            logger.warn("Database initialization failed - running in offline mode", e);
+            dataSource = null; // Will be handled gracefully by the application
+        }
     }
 
     private static void initializeDataSource() {
@@ -31,7 +36,7 @@ public class DatabaseConfig {
             props.setProperty("dataSource.port", "3306");
             props.setProperty("dataSource.databaseName", "school_management_system");
             props.setProperty("dataSource.user", "root");
-            props.setProperty("dataSource.password", "");
+            props.setProperty("dataSource.password", "root1234");
             props.setProperty("dataSource.cachePrepStmts", "true");
             props.setProperty("dataSource.prepStmtCacheSize", "250");
             props.setProperty("dataSource.prepStmtCacheSqlLimit", "2048");
